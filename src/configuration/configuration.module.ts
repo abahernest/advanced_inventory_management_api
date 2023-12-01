@@ -1,8 +1,8 @@
-import { Global, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import EnvironmentSchema from './environment.schema';
+import { DatabaseModule } from './database.module';
 
-@Global()
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -10,8 +10,9 @@ import EnvironmentSchema from './environment.schema';
       isGlobal: true,
       validationSchema: EnvironmentSchema,
     }),
+    DatabaseModule,
   ],
   providers: [],
-  exports: [],
+  exports: [ConfigModule, DatabaseModule],
 })
 export class ConfigurationModule {}
