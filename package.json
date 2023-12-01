@@ -8,16 +8,20 @@
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nest start",
-    "start:dev": "nest start --watch",
-    "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main",
+    "start": "yarn run:migration && nest start",
+    "start:dev": "yarn run:migration && nest start --watch",
+    "start:debug": "yarn run:migration && nest start --debug --watch",
+    "start:prod": "yarn run:migration && node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "typeorm": "yarn build && npx typeorm -d dist/db_migrations/data-source.js",
+    "generate:migration": "yarn typeorm -- migration:generate",
+    "run:migration": "yarn typeorm -- migration:run",
+    "revert:migration": "yarn typeorm -- migration:revert"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
