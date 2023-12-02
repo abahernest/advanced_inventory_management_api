@@ -3,10 +3,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  Index,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { VendorEntity } from '../../vendor/entities/vendor.entity';
 
 export enum Currency {
   NGN = 'NGN',
@@ -34,8 +35,7 @@ export class ProductEntity extends BaseEntity {
   })
   public title!: string;
 
-  @Column({ nullable: true })
-  @Index('product_vendor_id_idx')
+  @ManyToOne(() => VendorEntity, (vendor) => vendor.id, { nullable: true, onDelete: 'SET NULL' })
   vendor_id: number;
 
   @Column('text', { default: '' })
