@@ -9,6 +9,7 @@ import {
 } from 'class-validator';
 import { Currency } from '../entities/product.entity';
 import { Type } from 'class-transformer';
+import { VendorIdExists } from '../../vendor/validators/vendor-id-exists.validator';
 
 export class ProductDto {
   @IsString()
@@ -19,6 +20,11 @@ export class ProductDto {
   @IsString()
   @IsNotEmpty()
   description: string;
+
+  @IsOptional()
+  @IsNumber()
+  @VendorIdExists()
+  vendor_id: number;
 
   @IsOptional()
   @IsEnum(Currency)

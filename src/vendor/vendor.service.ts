@@ -73,4 +73,8 @@ export class VendorService {
       .orderBy('ts_rank_cd(v.fts_document, plainto_tsquery(:search))', 'DESC')
       .getMany();
   }
+
+  async findById(id: number): Promise<VendorEntity> {
+    return this.repository.findOne({ where: { id } });
+  }
 }

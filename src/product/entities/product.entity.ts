@@ -3,6 +3,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -35,7 +36,11 @@ export class ProductEntity extends BaseEntity {
   })
   public title!: string;
 
-  @ManyToOne(() => VendorEntity, (vendor) => vendor.id, { nullable: true, onDelete: 'SET NULL' })
+  @ManyToOne(() => VendorEntity, (vendor) => vendor.id, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
+  @JoinColumn({ name: 'vendor_id' })
   vendor_id: number;
 
   @Column('text', { default: '' })
