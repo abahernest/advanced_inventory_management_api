@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { VendorEntity } from './entities/vendor.entity';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { VendorDto } from './dto/create-vendor.dto';
 
@@ -8,13 +8,29 @@ import { VendorDto } from './dto/create-vendor.dto';
 export class VendorService {
   constructor(
     @InjectRepository(VendorEntity)
-    private readonly vendorRepository: Repository<VendorEntity>,
+    private readonly repository: Repository<VendorEntity>,
   ) {}
-  async create(createVendorDto: VendorDto[]): Promise<VendorEntity[]> {
-    return this.vendorRepository.create(createVendorDto);
+  async create(
+    createVendorDto: VendorDto[],
+  ): Promise<Pick<VendorEntity, 'id' | 'createdAt' | 'updatedAt'>[]> {
+    // idempotent operation
+    const vendors = await this.repository.upsert(createVendorDto, {
+      skipUpdateIfNoValuesChanged: true,
+      conflictPaths: { name: true },
+    });
+    return vendors.generatedMaps as VendorEntity[];
   }
 
   async findByName(name: string): Promise<VendorEntity> {
-    return this.vendorRepository.findOne({ where: { name } });
+    return await this.repository.findOne({ where: { name } });
+  }
+
+  async findManyByIdOrName(
+    ids: number[],
+    names: string[],
+  ): Promise<VendorEntity[]> {
+    return this.repository.find({
+      where: [{ id: In(ids) }, { name: In(names) }],
+    });
   }
 }

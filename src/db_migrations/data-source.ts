@@ -8,7 +8,7 @@ export const dataSourceOptions: DataSourceOptions = {
   type: 'postgres',
   url: NODE_ENV === 'test' ? TEST_DATABASE_URI : DATABASE_URI,
   entities: ['dist/**/*.entity.js'],
-  migrations: ['dist/db/migrations/*.js'],
+  migrations: ['dist/db_migrations/migrations/*.js'],
   migrationsRun: true,
 };
 

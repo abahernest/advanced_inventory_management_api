@@ -6,7 +6,7 @@ import {
   UpdateDateColumn,
   Column,
 } from 'typeorm';
-import { string } from "joi";
+
 @Entity({
   orderBy: {
     name: 'ASC',
@@ -20,9 +20,8 @@ export class VendorEntity extends BaseEntity {
 
   @Column({
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
     unique: true,
-    transformer: { to: (value: string) => value.toLowerCase() },
+    transformer: { to: (value: string): string => value.toLowerCase(), from: (value: string): string => value.toLowerCase()  },
   })
   public name!: string;
 

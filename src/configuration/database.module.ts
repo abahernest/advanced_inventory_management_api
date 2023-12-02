@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { VendorEntity } from '../vendor/entities/vendor.entity';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
             : configService.get('DATABASE_URI'),
         retryAttempts: 2,
         useUTC: true,
+        entities: [VendorEntity],
       }),
       inject: [ConfigService],
     }),

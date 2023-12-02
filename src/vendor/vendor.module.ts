@@ -9,6 +9,6 @@ import { UniqueVendorNameConstraint } from './validators/unique-vendor-name.vali
   imports: [TypeOrmModule.forFeature([VendorEntity])],
   controllers: [VendorController],
   providers: [VendorService, UniqueVendorNameConstraint],
-  exports: [VendorService, UniqueVendorNameConstraint],
+  exports: [TypeOrmModule, VendorService, UniqueVendorNameConstraint],
 })
 export class VendorModule {}

@@ -4,20 +4,23 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
+import { Inject, Injectable } from '@nestjs/common';
 import { VendorService } from '../vendor.service';
-import { Injectable } from '@nestjs/common';
 
 @ValidatorConstraint({ async: true })
 @Injectable()
 export class UniqueVendorNameConstraint
   implements ValidatorConstraintInterface
 {
-  constructor(private readonly vendorService: VendorService) {}
+  constructor(
+    @Inject(VendorService)
+    private readonly vendorService: VendorService,
+  ) {}
 
   validate(name: any) {
     return name
       ? this.vendorService.findByName(name).then((vendor) => {
-          return vendor != undefined;
+          return vendor == undefined;
         })
       : false;
   }

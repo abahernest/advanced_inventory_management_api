@@ -5,10 +5,7 @@ import { ConfigurationModule } from './configuration/configuration.module';
 import { VendorModule } from './vendor/vendor.module';
 
 @Module({
-  imports: [
-    ConfigurationModule,
-    VendorModule,
-  ],
+  imports: [ConfigurationModule, VendorModule],
   controllers: [AppController],
   providers: [AppService],
 })
