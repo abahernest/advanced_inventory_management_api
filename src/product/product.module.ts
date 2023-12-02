@@ -4,10 +4,12 @@ import { ProductController } from './product.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProductEntity } from './entities/product.entity';
 import { VendorModule } from '../vendor/vendor.module';
+import { ProductIdExistsConstraint } from './validators/product-id-exists.validator';
 
 @Module({
   imports: [TypeOrmModule.forFeature([ProductEntity]), VendorModule],
   controllers: [ProductController],
-  providers: [ProductService],
+  providers: [ProductService, ProductIdExistsConstraint],
+  exports: [ProductIdExistsConstraint],
 })
 export class ProductModule {}

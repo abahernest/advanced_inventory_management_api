@@ -1,6 +1,10 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Param, Patch } from "@nestjs/common";
 import { ProductService } from './product.service';
-import { CreateProductDto } from './dto/create-product.dto';
+import {
+  CreateProductDto,
+  ProductIdDto,
+  UpdateSingleProductDto,
+} from './dto/create-product.dto';
 import { ErrorLogger } from '../utils/error';
 
 @Controller('product')
@@ -23,6 +27,26 @@ export class ProductController {
       return this.productService.findByIds(idArray);
     } catch (e) {
       this.logger.handleError(`an error occurred while creating products`, e);
+    }
+  }
+
+  @Patch(':product_id')
+  async updateSingleProduct(
+    @Param() productIdDto: ProductIdDto,
+    @Body() updateProductDto: UpdateSingleProductDto,
+  ): Promise<UpdateSingleProductDto> {
+    try {
+      await this.productService.updateOne(
+        productIdDto.product_id,
+        updateProductDto,
+      );
+
+      return updateProductDto;
+    } catch (e) {
+      this.logger.handleError(
+        `an error occurred while modifying product with id ${productIdDto.product_id}`,
+        e,
+      );
     }
   }
 }

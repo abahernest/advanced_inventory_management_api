@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ProductDto } from './dto/create-product.dto';
+import { ProductDto, UpdateSingleProductDto } from './dto/create-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProductEntity } from './entities/product.entity';
 import { Repository } from 'typeorm';
@@ -28,5 +28,17 @@ export class ProductService {
       )
       .orderBy('v.created_at', 'DESC')
       .getMany();
+  }
+
+  async updateOne(
+    id: number,
+    updateProductDto: UpdateSingleProductDto,
+  ): Promise<Pick<ProductEntity, 'id' | 'created_at' | 'updated_at'>> {
+    const updateResult = await this.repository.update({ id }, updateProductDto);
+    return updateResult.generatedMaps[0] as ProductEntity;
+  }
+
+  async findById(id: number): Promise<ProductEntity> {
+    return this.repository.findOne({ where: { id } });
   }
 }
