@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   Column,
+  Index,
 } from 'typeorm';
 
 @Entity({
@@ -19,21 +20,30 @@ export class VendorEntity extends BaseEntity {
   public id!: number;
 
   @Column({
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     unique: true,
-    transformer: { to: (value: string): string => value.toLowerCase(), from: (value: string): string => value.toLowerCase()  },
+    transformer: {
+      to: (value: string): string => value.toLowerCase(),
+      from: (value: string): string => value.toLowerCase(),
+    },
   })
   public name!: string;
 
   @Column()
-  public phoneNumber!: string;
+  public phone_number!: string;
 
   @Column()
   public address!: string;
 
+  @Index('vendor_fts_document_idx')
+  @Column({
+    type: 'tsvector',
+    select: false,
+  })
+  public fts_document: any;
+
   @CreateDateColumn()
-  public createdAt!: Date;
+  public created_at!: Date;
 
   @UpdateDateColumn()
-  public updatedAt!: Date;
+  public updated_at!: Date;
 }
