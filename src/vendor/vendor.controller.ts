@@ -45,7 +45,6 @@ export class VendorController {
       }
       return this.vendorService.findManyByIdOrName(filter.ids, filter.names);
     } catch (e) {
-      console.log(e)
       this.logger.handleError('an error occurred while creating vendors', e);
     }
   }

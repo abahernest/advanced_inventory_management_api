@@ -11,7 +11,7 @@ import {
 @Entity({
   orderBy: {
     name: 'ASC',
-    createdAt: 'DESC',
+    created_at: 'DESC',
   },
   name: 'Vendor',
 })
