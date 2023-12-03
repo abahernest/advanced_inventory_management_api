@@ -1,6 +1,10 @@
-import { Controller, Body, Patch, Param } from '@nestjs/common';
+import { Controller, Body, Patch, Param, Get, Query } from '@nestjs/common';
 import { InventoryService } from './inventory.service';
-import { UpdateInventoryDto } from './dto/inventory.dto';
+import {
+  PaginatedResponseDto,
+  PaginationDto,
+  UpdateInventoryDto,
+} from './dto/inventory.dto';
 import { InventoryIdDto } from './dto/inventory.dto';
 import { ErrorLogger } from '../utils/error';
 import { DataSource } from 'typeorm';
@@ -50,6 +54,46 @@ export class InventoryController {
       return updateInventoryDto;
     } catch (e) {
       this.logger.handleError(`an error occurred while updating inventory`, e);
+    }
+  }
+
+  @Get('restock-report')
+  async restockReport(
+    @Query('page_number') page_number: string = '1',
+    @Query('limit') limit: string = '10',
+  ): Promise<PaginatedResponseDto> {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      const paginationDto: PaginationDto = {
+        limit: Number(limit),
+        page_number: Number(page_number),
+      };
+
+      const output: PaginatedResponseDto = {
+        meta: {
+          limit: paginationDto.limit,
+          page_number: paginationDto.page_number,
+        },
+        data: [],
+      };
+      output.data = await this.inventoryService.generateRestockReport(
+        paginationDto,
+        queryRunner,
+      );
+
+      await queryRunner.commitTransaction();
+
+      return output;
+    } catch (e) {
+      await queryRunner.rollbackTransaction();
+      this.logger.handleError(
+        `an error occurred while generating restock report`,
+        e,
+      );
+    } finally {
+      await queryRunner.release();
     }
   }
 }
