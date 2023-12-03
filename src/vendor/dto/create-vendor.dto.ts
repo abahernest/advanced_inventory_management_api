@@ -1,4 +1,5 @@
 import {
+  ArrayMinSize,
   IsArray,
   IsNotEmpty,
   IsPhoneNumber,
@@ -25,6 +26,7 @@ export class VendorDto {
 
 export class CreateVendorDto {
   @IsArray()
+  @ArrayMinSize(1)
   @Type(() => VendorDto)
   @ValidateNested({ each: true })
   vendors: VendorDto[];

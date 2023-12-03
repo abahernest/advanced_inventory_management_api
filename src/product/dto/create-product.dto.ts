@@ -1,4 +1,5 @@
 import {
+  ArrayMinSize,
   IsArray,
   IsEnum,
   IsNotEmpty,
@@ -43,6 +44,7 @@ export class ProductDto {
 
 export class CreateProductDto {
   @IsArray()
+  @ArrayMinSize(1)
   @Type(() => ProductDto)
   @ValidateNested({ each: true })
   products: ProductDto[];
@@ -75,6 +77,8 @@ export class UpdateSingleProductDto {
   @IsOptional()
   @IsNumber()
   quantity?: number;
+
+  id?: number;
 }
 
 export class ProductIdDto {

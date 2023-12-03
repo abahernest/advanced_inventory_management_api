@@ -19,10 +19,6 @@ export enum Currency {
 }
 
 @Entity({
-  orderBy: {
-    title: 'ASC',
-    created_at: 'DESC',
-  },
   name: 'Product',
 })
 export class ProductEntity extends BaseEntity {

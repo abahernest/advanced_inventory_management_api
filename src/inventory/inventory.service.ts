@@ -36,4 +36,16 @@ export class InventoryService {
       .update(InventoryEntity, { id }, updateInventoryDto);
     return inventory.generatedMaps[0] as InventoryEntity;
   }
+
+  async bulkUpsert(
+    updateInventoryDtoArray: Partial<UpdateInventoryDto>[],
+    queryRunner: QueryRunner | null = null,
+  ): Promise<Pick<InventoryEntity, 'id' | 'created_at' | 'updated_at'>[]> {
+    const inventories = await this.dataSource
+      .createEntityManager(queryRunner)
+      .upsert(InventoryEntity, updateInventoryDtoArray, {
+        conflictPaths: { product_id: true },
+      });
+    return inventories.generatedMaps as InventoryEntity[];
+  }
 }

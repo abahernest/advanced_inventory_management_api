@@ -27,15 +27,16 @@ export class ProductService {
     ids: number[],
     queryRunner: QueryRunner | null = null,
   ): Promise<ProductEntity[]> {
-    return this.repository
-      .createQueryBuilder('v', queryRunner)
-      .where(
-        // TODO: sub-optimal. Query not using index
-        `v.id = ANY(:ids)`,
-        { ids },
-      )
-      .orderBy('v.created_at', 'DESC')
-      .getMany();
+    return this.dataSource.createEntityManager(queryRunner).query(
+      `
+    SELECT p.*
+    FROM "Product" as p
+    JOIN unnest('{${ids.join(
+      ',',
+    )}}'::int[]) WITH ORDINALITY  t(id, ord) USING (id)
+    ORDER BY t.ord;
+    `,
+    );
   }
 
   async updateOne(
@@ -86,5 +87,14 @@ export class ProductService {
       .where('p.fts_document @@ plainto_tsquery(:search)', { search })
       .orderBy('ts_rank_cd(p.fts_document, plainto_tsquery(:search))', 'DESC')
       .getMany();
+  }
+
+  async bulkUpsert(
+    updateProductDtoArray: Partial<UpdateSingleProductDto>[],
+    queryRunner: QueryRunner | null = null,
+  ): Promise<Pick<ProductEntity, 'id' | 'created_at' | 'updated_at'>[]> {
+    return this.dataSource
+      .createEntityManager(queryRunner)
+      .save(ProductEntity, updateProductDtoArray);
   }
 }

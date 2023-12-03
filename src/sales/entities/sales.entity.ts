@@ -6,38 +6,36 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
-  OneToOne,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
 @Entity({
   orderBy: {
-    physical_quantity: 'ASC',
     created_at: 'DESC',
   },
-  name: 'Inventory',
+  name: 'Sales',
 })
-export class InventoryEntity extends BaseEntity {
+export class SalesEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
   public id!: number;
 
-  @OneToOne(() => ProductEntity, {
+  @ManyToOne(() => ProductEntity, (product) => product.id, {
     nullable: false,
-    onDelete: 'CASCADE',
-    lazy: true,
+    onDelete: 'SET NULL',
   })
   @JoinColumn({ name: 'product_id' })
   public product: ProductEntity;
 
-  @Column({ nullable: false, unique: true })
+  @Column({ nullable: false })
   product_id: number;
 
-  @Column('integer', { default: 0 })
-  public physical_quantity?: number;
+  @Column('integer')
+  public quantity_sold: number;
 
-  @Column('integer', { default: 20 })
-  public min_stock_threshold?: number;
+  @Column('integer')
+  public total_amount?: number;
 
   @CreateDateColumn()
   public created_at!: Date;

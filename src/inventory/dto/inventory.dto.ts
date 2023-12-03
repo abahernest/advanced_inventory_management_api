@@ -1,5 +1,5 @@
-import { IsNumber, IsNumberString, IsOptional, Min } from "class-validator";
-import { InventoryIdExists } from "../validators/inventory-id-exists.validator";
+import { IsNumber, IsNumberString, IsOptional, Min } from 'class-validator';
+import { InventoryIdExists } from '../validators/inventory-id-exists.validator';
 
 export class UpdateInventoryDto {
   @IsOptional()
