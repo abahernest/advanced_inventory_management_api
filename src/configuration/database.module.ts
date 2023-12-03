@@ -9,16 +9,23 @@ import { SalesEntity } from '../sales/entities/sales.entity';
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
-      useFactory: async (configService: ConfigService) => ({
-        type: 'postgres',
-        url:
-          configService.get<string>('NODE_ENV') === 'test'
-            ? configService.get('TEST_DATABASE_URI')
-            : configService.get('DATABASE_URI'),
-        retryAttempts: 2,
-        useUTC: true,
-        entities: [VendorEntity, ProductEntity, InventoryEntity, SalesEntity],
-      }),
+      useFactory: async (configService: ConfigService) => {
+        const [, username, password, host, database] = [
+          configService.get<string>('NODE_ENV'),
+          configService.get<string>('DATABASE_USER'),
+          configService.get<string>('DATABASE_PASSWORD'),
+          configService.get<string>('DATABASE_HOST'),
+          configService.get<string>('DATABASE_NAME'),
+        ];
+
+        return {
+          type: 'postgres',
+          url: `postgres://${username}:${password}@${host}:5432/${database}`,
+          retryAttempts: 2,
+          useUTC: true,
+          entities: [VendorEntity, ProductEntity, InventoryEntity, SalesEntity],
+        };
+      },
       inject: [ConfigService],
     }),
   ],

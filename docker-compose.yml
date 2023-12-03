@@ -1,0 +1,42 @@
+version: '3.8'
+services:
+  postgresdb:
+    image: postgres:12-alpine
+    restart: unless-stopped
+    networks:
+      - webnet
+    environment:
+      POSTGRES_USER: ${DATABASE_USER:-postgres}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-postgres}
+      POSTGRES_DB: ${DATABASE_NAME:-advanced_inventory_management}
+    ports:
+      - '5433:5432'
+    volumes:
+      - AIMA-db:/var/lib/postgresql/data
+
+  app_server:
+    depends_on:
+      - postgresdb
+    image: "abahernest/advanced-inventory-management-api-server:1.0"
+#    build: .
+    restart: unless-stopped
+    networks:
+      - webnet
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - "60061:60061"
+    environment:
+      NODE_ENV: production
+      DATABASE_NAME: ${DATABASE_NAME:-advanced_inventory_management}
+      DATABASE_HOST: postgresdb
+      DATABASE_USER: ${DATABASE_USER:-postgres}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD:-postgres}
+    command: ["yarn", "start:prod"]
+
+volumes:
+  AIMA-db:
+
+networks:
+  webnet:

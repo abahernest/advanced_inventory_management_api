@@ -2,11 +2,11 @@ import { DataSourceOptions, DataSource } from 'typeorm';
 import { config } from 'dotenv';
 config();
 
-const { TEST_DATABASE_URI, DATABASE_URI, NODE_ENV } = process.env;
+const { DATABASE_NAME, DATABASE_USER, DATABASE_PASSWORD, DATABASE_HOST } = process.env;
 
 export const dataSourceOptions: DataSourceOptions = {
   type: 'postgres',
-  url: NODE_ENV === 'test' ? TEST_DATABASE_URI : DATABASE_URI,
+  url: `postgres://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}:5432/${DATABASE_NAME}`,
   entities: ['dist/**/*.entity.js'],
   migrations: ['dist/db_migrations/migrations/*.js'],
   migrationsRun: true,

@@ -5,10 +5,8 @@ export default Joi.object({
     .valid('development', 'production', 'test')
     .default('development'),
   PORT: Joi.number().default(60061),
-  DATABASE_URI: Joi.string().default(
-    'postgres://postgres:postgres@localhost:5432/advanced_inventory_management',
-  ),
-  TEST_DATABASE_URI: Joi.string().default(
-    'postgres://postgres:postgres@localhost:5432/advanced_inventory_management_test',
-  ),
+  DATABASE_NAME: Joi.string().default('advanced_inventory_management'),
+  DATABASE_HOST: Joi.string().default('localhost'),
+  DATABASE_USER: Joi.string().default('postgres'),
+  DATABASE_PASSWORD: Joi.string().default('postgres'),
 });
