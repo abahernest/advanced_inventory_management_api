@@ -10,6 +10,6 @@ import { ProductIdExistsConstraint } from './validators/product-id-exists.valida
   imports: [TypeOrmModule.forFeature([ProductEntity]), VendorModule],
   controllers: [ProductController],
   providers: [ProductService, ProductIdExistsConstraint],
-  exports: [ProductIdExistsConstraint],
+  exports: [TypeOrmModule, ProductService, ProductIdExistsConstraint],
 })
 export class ProductModule {}

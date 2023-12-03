@@ -4,20 +4,19 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
-import { Inject, Injectable } from '@nestjs/common';
-import { ProductService } from '../product.service';
+import { Injectable } from '@nestjs/common';
+import { DataSource } from 'typeorm';
+import { ProductEntity } from '../entities/product.entity';
 
 @ValidatorConstraint({ async: true })
 @Injectable()
 export class ProductIdExistsConstraint implements ValidatorConstraintInterface {
-  constructor(
-    @Inject(ProductService)
-    private readonly productService: ProductService,
-  ) {}
+  constructor(private readonly dataSource: DataSource) {}
 
-  validate(name: any) {
-    return this.productService
-      .findById(name)
+  validate(id: any) {
+    return this.dataSource
+      .getRepository(ProductEntity)
+      .findOne({ where: { id } })
       .then((vendor) => {
         return vendor != undefined;
       })

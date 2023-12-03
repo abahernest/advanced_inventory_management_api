@@ -2,12 +2,12 @@ import {
   BaseEntity,
   Column,
   CreateDateColumn,
-  Entity,
+  Entity, Index,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+  UpdateDateColumn
+} from "typeorm";
 import { VendorEntity } from '../../vendor/entities/vendor.entity';
 
 export enum Currency {
@@ -60,4 +60,11 @@ export class ProductEntity extends BaseEntity {
 
   @UpdateDateColumn()
   public updated_at!: Date;
+
+  @Index('product_fts_document_idx')
+  @Column({
+    type: 'tsvector',
+    select: false,
+  })
+  public fts_document: any;
 }
