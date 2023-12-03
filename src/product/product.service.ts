@@ -2,26 +2,33 @@ import { Injectable } from '@nestjs/common';
 import { ProductDto, UpdateSingleProductDto } from './dto/create-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProductEntity } from './entities/product.entity';
-import { Repository } from 'typeorm';
+import { DataSource, QueryRunner, Repository } from 'typeorm';
 import { PaginationDto } from './dto/create-product.dto';
 
 @Injectable()
 export class ProductService {
   constructor(
+    private readonly dataSource: DataSource,
     @InjectRepository(ProductEntity)
     private readonly repository: Repository<ProductEntity>,
   ) {}
 
   async create(
     createProductDto: ProductDto[],
-  ): Promise<Pick<ProductEntity, 'id' | 'created_at' | 'updated_at'>[]> {
-    const products = await this.repository.insert(createProductDto);
-    return products.generatedMaps as ProductEntity[];
+    queryRunner: QueryRunner | null = null,
+  ): Promise<ProductEntity[]> {
+    const products = await this.dataSource
+      .createEntityManager(queryRunner)
+      .save(ProductEntity, createProductDto);
+    return products as ProductEntity[];
   }
 
-  async findByIds(ids: number[]): Promise<ProductEntity[]> {
+  async findByIds(
+    ids: number[],
+    queryRunner: QueryRunner | null = null,
+  ): Promise<ProductEntity[]> {
     return this.repository
-      .createQueryBuilder('v')
+      .createQueryBuilder('v', queryRunner)
       .where(
         // TODO: sub-optimal. Query not using index
         `v.id = ANY(:ids)`,
@@ -34,8 +41,11 @@ export class ProductService {
   async updateOne(
     id: number,
     updateProductDto: UpdateSingleProductDto,
+    queryRunner: QueryRunner | null = null,
   ): Promise<Pick<ProductEntity, 'id' | 'created_at' | 'updated_at'>> {
-    const updateResult = await this.repository.update({ id }, updateProductDto);
+    const updateResult = await this.dataSource
+      .createEntityManager(queryRunner)
+      .update(ProductEntity, id, updateProductDto);
     return updateResult.generatedMaps[0] as ProductEntity;
   }
 

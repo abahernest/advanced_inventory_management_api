@@ -1,4 +1,12 @@
-import { Controller, Post, Body, Param, Patch, Get, Query } from "@nestjs/common";
+import {
+  Controller,
+  Post,
+  Body,
+  Param,
+  Patch,
+  Get,
+  Query,
+} from '@nestjs/common';
 import { ProductService } from './product.service';
 import {
   CreateProductDto,
@@ -6,29 +14,58 @@ import {
   UpdateSingleProductDto,
 } from './dto/create-product.dto';
 import { ErrorLogger } from '../utils/error';
-import { PaginatedResponseDto, PaginationDto, SortDirection, SortIndex } from "./dto/create-product.dto";
+import {
+  PaginatedResponseDto,
+  PaginationDto,
+  SortDirection,
+  SortIndex,
+} from './dto/create-product.dto';
 import { Currency } from './entities/product.entity';
+import { DataSource } from 'typeorm';
+import { InventoryService } from '../inventory/inventory.service';
+import { UpdateInventoryDto } from '../inventory/dto/inventory.dto';
 
 @Controller('product')
 export class ProductController {
   logger: ErrorLogger;
-  constructor(private readonly productService: ProductService) {
+  constructor(
+    private readonly dataSource: DataSource,
+    private readonly productService: ProductService,
+    private readonly inventoryService: InventoryService,
+  ) {
     this.logger = new ErrorLogger('ProductController');
   }
 
   @Post()
   async bulkCreate(@Body() createProductDto: CreateProductDto) {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
     try {
-      const productIds = await this.productService.create(
+      const products = await this.productService.create(
         createProductDto.products,
+        queryRunner,
       );
 
-      // crate array of product ids that was successful
-      const idArray = productIds.map((product) => product.id);
+      // prepare inventory array for bulk insert
+      const inventory: UpdateInventoryDto[] = [];
+      for (let i = 0; i < products.length; i += 1) {
+        const product = products[i];
+        inventory.push({
+          product_id: product.id,
+          physical_quantity: product.quantity,
+        });
+      }
 
-      return this.productService.findByIds(idArray);
+      await this.inventoryService.create(inventory, queryRunner);
+
+      await queryRunner.commitTransaction();
+      return products;
     } catch (e) {
+      await queryRunner.rollbackTransaction();
       this.logger.handleError(`an error occurred while creating products`, e);
+    } finally {
+      await queryRunner.release();
     }
   }
 

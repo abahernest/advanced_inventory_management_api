@@ -52,29 +52,29 @@ export class UpdateSingleProductDto {
   @IsOptional()
   @IsString()
   @IsNotEmpty()
-  title: string;
+  title?: string;
 
   @IsOptional()
   @IsString()
   @IsNotEmpty()
-  description: string;
+  description?: string;
 
   @IsOptional()
   @IsNumber()
   @VendorIdExists()
-  vendor_id: number;
+  vendor_id?: number;
 
   @IsOptional()
   @IsEnum(Currency)
-  currency: Currency;
+  currency?: Currency;
 
   @IsOptional()
   @IsNumber()
-  price: number;
+  price?: number;
 
   @IsOptional()
   @IsNumber()
-  quantity: number;
+  quantity?: number;
 }
 
 export class ProductIdDto {

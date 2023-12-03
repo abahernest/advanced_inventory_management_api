@@ -2,12 +2,13 @@ import {
   BaseEntity,
   Column,
   CreateDateColumn,
-  Entity, Index,
+  Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn
-} from "typeorm";
+  UpdateDateColumn,
+} from 'typeorm';
 import { VendorEntity } from '../../vendor/entities/vendor.entity';
 
 export enum Currency {
@@ -41,7 +42,10 @@ export class ProductEntity extends BaseEntity {
     onDelete: 'SET NULL',
   })
   @JoinColumn({ name: 'vendor_id' })
-  vendor_id: number;
+  public vendor: VendorEntity;
+
+  @Column()
+  public vendor_id: number;
 
   @Column('text', { default: '' })
   public description?: string;
