@@ -1,30 +1,63 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Advanced Inventory Management API - AIMA
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## Project Description
+A simple REST API that allows the management of product inventory with added complexity in data retrieval.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Repository Architecture
 
-## Description
+This monorepo implements Clean NestJs Architecture with Typescript (Controller, Service, and Data Layer).
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## App Features
+
+- Product, Vendor, Sales, Inventory API Endpoints (CRUD)
+- Pagination and Postgres Full-Text-Search available on Products and Vendor EPs
+- Postgres transactions on critical sections.
+- Restock Report Endpoint
+- Containerization with Docker
+- Postman Documentation
+
+
+## Restock Report Endpoint
+
+Models Used in the query and information obtained from them
+
+### MonthlySales (Sales and Product Tables): 
+
+```
+
+    This is the first sub query to obtain the average monthly sales.
+    Perform JOIN from Sales table to Product table, selecting only sales records 
+    from 1 month ago and applying the AVG aggregation function on the `quantity_sold`
+    field. Ofc we GROUPED BY by product ID.
+    
+```
+
+### CurrentInventory (Inventory Table):
+
+```
+
+    Here, we just directly obtain the minimum stock threshold 
+    and available product quantity from the Inventory table.
+
+```
+
+### SupplierInfo (Product and Vendor Tables):
+
+```
+
+    Since the vendor_id column is optional on the Product table, 
+    to include restock data for products without vendor, we perform a LEFT JOIN 
+    from Product table to Vendor Table and then set "NO_VENDOR" as the default 
+    vendor name for when vendor_id is null using the COALESCE function.
+
+```
+
+
+
+## Postman Documentation
+
+[https://documenter.getpostman.com/view/11044390/2s9YeK5B1r](https://documenter.getpostman.com/view/11044390/2s9YeK5B1r)
+
 
 ## Installation
 
@@ -35,6 +68,9 @@ $ yarn install
 ## Running the app
 
 ```bash
+# with docker compose
+$ docker-compose up
+
 # development
 $ yarn run start
 
@@ -45,29 +81,7 @@ $ yarn run start:dev
 $ yarn run start:prod
 ```
 
-## Test
+## Limitations
 
-```bash
-# unit tests
-$ yarn run test
-
-# e2e tests
-$ yarn run test:e2e
-
-# test coverage
-$ yarn run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+- Unit Testing
+- Authentication & Authorization
